@@ -1,8 +1,9 @@
 from flask import render_template
 from app.login import login_bp
+from app.db_connection.conn import get_connection
 
 @login_bp.route('/login')
-def login():
+def login():  
     return render_template('login.html')
 
 @login_bp.route('/register')

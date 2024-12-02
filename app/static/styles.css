@@ -1,0 +1,300 @@
+
+/* Custom styles for header */
+.header {
+    background-color: #006400;  /* Dark green */
+    padding: 4px;
+    color: white;
+    text-align: center;
+}
+
+
+
+
+/* FLash from previous style */
+.flash-success {
+    color: green;
+    background-color: #DFF2BF;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid green;
+}
+.flash-message {
+    text-align: center;
+    margin: 0 auto;
+    width: 50%; /* Adjust the width as needed */
+}
+.flash-amber {
+    color: white;
+    background-color: #FFC107;  /* Amber */
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #FFC107;
+}
+
+/* flash new */
+.flash-messages {
+    list-style-type: none;
+    padding: 0;
+}
+
+.flash-messages li.success {
+color: green;
+}
+
+.flash-messages li.error {
+color: red;
+}
+
+/* buttons */
+.btn-amber {
+    background-color: #FFC107;
+    color: white;
+}
+.header-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Center align items vertically */
+    gap: 10px; /* Padding between buttons */
+}
+.header-buttons .btn {
+    padding: 2px 5px; /* Adjust padding to make buttons smaller */
+    border-radius: 2px; /* Make buttons rectangular */
+    font-size: 12px; /* Adjust font size if necessary */
+}
+
+/* Form container styling */
+.form-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+}
+
+/* Form group styling */
+.form-group {
+    margin-bottom: 15px;
+}
+
+/* Label styling */
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* Input, select, and textarea styling */
+.form-group select,
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+/* Test version Styling */
+.test-version-info {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9ffc1;
+    <!-- background-color: #f9f9f9;-->
+    border-radius: 5px;
+}
+.test-version-info p {
+    margin: 5px 0;
+}
+
+/* Button styling */
+button[type="submit"] {
+    background-color: #006400;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button[type="submit"]:hover {
+    background-color: #004d00;
+}
+
+/* Button Style Dark Green*/
+.btn-dark-green {
+    background-color: #006400;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+.btn-dark-green:hover {
+    background-color: #004d00; /* Darker green on hover */
+}
+
+/* Hide the spinner controls for number input fields */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield; /* Firefox */
+}
+
+/* Center text styling */
+.center-text {
+    text-align: center;
+}
+
+/* Custom styles for menu points */
+.menu-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.menu-list li {
+    margin: 10px 0;
+}
+
+.menu-list a {
+    text-decoration: none;
+    color: #006400; /* Dark green */
+    font-weight: bold;
+}
+
+.menu-list a:hover {
+    color: #004d00; /* Darker green */
+}
+/* Center the ul element */
+.menu-list-container {
+    display: flex;
+    justify-content: center;
+}
+
+/* Dropdown menu styling */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    font-size: 10px;
+}
+
+.dropdown-content a:hover {
+    background-color: #f1f1f1;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown .dropbtn {
+    background-color: #006400;
+    color: white;
+    padding:1px 40px;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+}
+
+.dropdown .dropbtn::before {
+    content: "\2630"; /* Unicode for three horizontal lines */
+    font-size: 20px;
+}
+
+/* Add this to your CSS file or within a <style> tag in base.html */
+.link-container {
+    margin-top: 0px;
+    text-align: center;
+}
+
+/* Link container styling */
+.link-container a {
+    margin: 0 10px;
+    color: #006400; /* Dark green */
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.link-container a:hover {
+    color: #004d00; /* Darker green */
+}
+
+.footer {
+    text-align: center;
+}
+
+    /* Add padding to table cells to create space between columns */
+table td {
+    padding: 5px; /* Adjust the padding value as needed */
+}
+
+
+table, th, td {
+    border: 1px solid #ddd;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 8px;
+}
+th {
+    background-color: #f2f2f2;
+}
+
+/* Custom styles for menu points */
+.menu-list {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.menu-list li {
+    margin: 10px 0;
+}
+
+.menu-item {
+    text-decoration: none;
+    color: #ffffff !important; /* White color for text */
+    background-color: #006400; /* Dark green */
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: background-color 0.3s, transform 0.3s;
+    font-weight: bold;
+    display: block;
+    width: 200px;
+    text-align: center;
+}
+
+.menu-item:hover {
+    background-color: #004d00; /* Darker green */
+    transform: scale(1.05);
+}
+
+.description-column {
+    width: 300px; /* Adjust the width as needed */
+    max-width: 600px; /* Ensure it doesn't exceed the set width */
+    word-wrap: break-word; /* Ensure text wraps within the column */
+}
