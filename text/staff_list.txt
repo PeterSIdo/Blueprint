@@ -1,0 +1,8 @@
+id
+staff_firstname
+staff_surname
+staff_initials
+staff_unique_id
+staff_access
+staff_notes
+password_hash

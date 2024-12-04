@@ -1,0 +1,11 @@
+for the carer_menu edpoint i need a logic and template
+
+the logic
+connects to the database with: conn = get_connection()
+creates if not exists table fluid_chart
+collects data that inserts into table fluid_chart 
+
+the template
+collects data
+
+data structure for fluid chart:

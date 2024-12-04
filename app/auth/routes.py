@@ -25,19 +25,30 @@ def auth():
 
         if user and check_password_hash(user[7], password):
             session['user_id'] = user[0]
-            session['username'] = f"{user[1]} {user[2]}"
-            flash('Logged in successfully', 'success')
-            return redirect(url_for('main.index'))
+            session['username'] = user[1]
+            
+            # Check if staff_access is 'carer'
+            if user[5] == 'carer':  # Index 5 contains staff_access based on staff_list.txt
+                flash('Logged in successfully', 'success')
+                return redirect(url_for('carer.carer_menu'))
+            
+            elif user[5] == 'admin':
+                    flash('Logged in successfully', 'success')
+                    return redirect(url_for('admin.admin_menu'))
+                
+            elif user[5] == 'manager':
+                    flash('Logged in successfully', 'success')
+                    return redirect(url_for('data_input.family_menu'))
+                
+            elif user[5] == 'family':
+                flash('Logged in successfully', 'success')
+                return redirect(url_for('family.family_menu'))            
+            
+            else:
+                flash('Logged in successfully', 'success') 
+                return redirect(url_for('main.index'))
         else:
             flash('Invalid credentials. Please try again.', 'amber')
 
     return render_template('auth.html')
 
-@auth_bp.route('/access')
-def access():
-    conn = get_connection()
-    if conn is None:
-        return "Database connection failed", 500
-    else:
-        conn.close()
-        return "Database connection successful", 200
