@@ -7,7 +7,28 @@
     text-align: center;
 }
 
+.horizontal-menu {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    background-color: #f0f0f0;
+}
 
+.horizontal-menu li {
+    margin: 0 15px;
+}
+
+.horizontal-menu a {
+    text-decoration: none;
+    color: #3e3007;  /* Amber color */
+    font-weight: bold;
+}
+
+.horizontal-menu a:hover {
+    color: #FFA000;  /* Darker amber for hover effect */
+}
 
 
 /* FLash from previous style */

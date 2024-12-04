@@ -29,7 +29,7 @@ def auth():
             flash('Logged in successfully', 'success')
             return redirect(url_for('main.index'))
         else:
-            flash('Invalid credentials', 'amber')
+            flash('Invalid credentials. Please try again.', 'amber')
 
     return render_template('auth.html')
 
