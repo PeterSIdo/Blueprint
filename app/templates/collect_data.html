@@ -1,0 +1,80 @@
+<!-- Collect_data.html -->
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container">
+    <h2 class = "center-text" >Data Input</h2>
+    <form method="POST" action="/submit" class="form-container">
+
+    <div class = "form-group">
+        <!-- Unit Dropdown -->
+        <label for="unit">Select Unit:</label>
+        <select id="unit" name="unit">
+            <option value="">--Select Unit--</option>
+            {% for unit in units %}
+                <option value="{{ unit }}">{{ unit }}</option>
+            {% endfor %}
+        </select>
+
+        <!-- Resident Dropdown -->
+        <label for="resident">Select Resident:</label>
+        <select id="resident" name="resident">
+            <option value="">--Select Resident--</option>
+        </select>
+
+        <!-- Service Dropdown -->
+        <label for = "service" > Select Service: </label>
+        <select id = "service" name = "service">
+            <option value = "" > -- Select Service -- </option>
+            {% for service in services %}
+                <option value="{{ service }}">{{ service }}</option>
+            {% endfor %}
+        </select>
+
+
+
+    </div>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Get references to dropdowns
+            const unitDropdown = document.getElementById('unit');
+            const residentDropdown = document.getElementById('resident');
+
+            // Event listener for unit selection
+            unitDropdown.addEventListener('change', function () {
+                const selectedUnit = unitDropdown.value;
+
+                // Clear the resident dropdown
+                residentDropdown.innerHTML = '<option value="">--Select Resident--</option>';
+
+                if (selectedUnit) {
+                    // Fetch residents for the selected unit
+                    fetch('/get_residents', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ unit: selectedUnit })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Populate the resident dropdown with the fetched data
+                        data.residents.forEach(function (resident) {
+                            const option = document.createElement('option');
+                            option.value = resident;
+                            option.textContent = resident;
+                            residentDropdown.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching residents:', error);
+                    });
+                }
+            });
+        });
+    </script>
+{% endblock %}

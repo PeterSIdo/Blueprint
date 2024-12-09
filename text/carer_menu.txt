@@ -1,11 +1,21 @@
 for the carer_menu edpoint i need a logic and template
 
-the logic
+logic
 connects to the database with: conn = get_connection()
 creates if not exists table fluid_chart
 collects data that inserts into table fluid_chart 
 
-the template
+template
 collects data
 
 data structure for fluid chart:
+timestamp
+fluid_name
+fluid_volume
+fluid_note
+staff_initials
+
+I need advise how to manage the process of data collection (data input)
+this project is designed for multiple users to open i=and insert data into sql postgre  database
+
+in endpo

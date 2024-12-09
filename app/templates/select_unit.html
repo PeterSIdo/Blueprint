@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Select Unit</h1>
+    <form method="POST" action="{{ url_for('data_input.select_resident') }}">
+        <div>
+            <label for="resident_unit">Unit Name:</label>
+            <select id="resident_unit" name="resident_unit" required>
+                {% for unit in units %}
+                    <option value="{{ unit[0] }}">{{ unit[0] }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit">Next</button>
+    </form>
+{% endblock %}
+

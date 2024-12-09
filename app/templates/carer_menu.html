@@ -5,5 +5,10 @@
 <body>
     <h2>Carer Menu</h2>
     {{ session.username }}
+    <ul class="menu-list">
+        <li><a href="{{ url_for('data_input.collect_data') }}" class="menu-item">Data collection</a></li>
+        <li><a href="#" class="menu-item">Reports</a></li>
+    </ul>
+
 </body>
-{% endblock%}
+{% endblock%}   
