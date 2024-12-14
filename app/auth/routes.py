@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 import time
 
 # Timeout variable for a session 
-timeout = 10
+timeout = 1
 
 @auth_bp.route('/auth', methods=['GET', 'POST'])
 def auth():
@@ -84,3 +84,22 @@ def logged_in(f):
 @logged_in
 def protected_route():
     return 'This is protected content'
+
+# Check staff initials 
+@auth_bp.route('/check_staff_initials', methods=['POST'])
+def check_staff_initials():
+    staff_initials = request.form.get('staff_initials').upper()
+    
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    # Check if staff_initials exist in staff_list table
+    cursor.execute('SELECT 1 FROM staff_list WHERE staff_initials = %s', (staff_initials,))
+    result = cursor.fetchone()
+    
+    cursor.close()
+    conn.close()
+
+    if result is None:
+        return jsonify({'valid': False, 'message': 'Invalid staff initials'})
+    return jsonify({'valid': True})

@@ -2,6 +2,7 @@
 from flask import render_template, session, request, redirect, url_for, flash, jsonify
 from app.data_input import data_input_bp
 from app.db_connection.conn import get_connection
+from datetime import datetime
 
 
 
@@ -41,7 +42,8 @@ def data_input_logic():
                             resident_initials=resident_initials))
     else:
         return render_template('here.html')
-    
+
+# Fluid intake INPUT    
 @data_input_bp.route('/fluid_intake')
 def fluid_intake():
     unit_name = request.args.get('unit_name')
@@ -52,15 +54,55 @@ def fluid_intake():
         cursor.execute("""
             SELECT DISTINCT fluid_name FROM fluid_list ORDER BY fluid_name 
         """)
-        fluids = [row[0] for row in cursor.fetchall()]
+        fluid_list = [row[0] for row in cursor.fetchall()]
     conn.close()
     
     return render_template('fluid_intake.html',
-                        fluids=fluids, 
+                        fluid_list=fluid_list, 
                         unit_name=unit_name,
                         resident_initials=resident_initials)
     
     
-@data_input_bp.route('/submit_fluid_intake')
+# Submit fluid intake
+@data_input_bp.route('/submit_fluid_intake', methods=['POST'])
 def submit_fluid_intake():
-    return render_template('submit_intake.html')
+    conn = None
+    try:
+        conn = get_connection()
+        with conn.cursor() as cursor:
+            # Get form data
+            input_time = request.form.get('input_time')
+            timestamp = datetime.strptime(input_time, '%H:%M').time()
+            fluid_name = request.form.get('fluid_name')
+            fluid_volume = request.form.get('fluid_volume')
+            fluid_note = request.form.get('fluid_note')
+            staff_initials = request.form.get('staff_initials')
+            
+            # Validate staff initials
+            cursor.execute('SELECT 1 FROM staff_list WHERE staff_initials = %s', 
+                    (staff_initials,))
+            if cursor.fetchone() is None:
+                flash('Invalid staff initials. Please check and try again.', 'amber')
+                return redirect(url_for('data_input.fluid_intake', 
+                    unit_name=request.form.get('unit_name'), 
+                    resident_initials=request.form.get('resident_initials')))
+            
+            # Insert data
+            cursor.execute("""
+                INSERT INTO fluid_chart 
+                (timestamp, fluid_name, fluid_volume, fluid_note, staff_initials)
+                VALUES (%s, %s, %s, %s, %s)
+                """, (timestamp, fluid_name, fluid_volume, fluid_note, staff_initials))
+            
+            conn.commit()
+            flash('Data updated successfully', 'success')
+            return redirect(url_for('data_input.collect_data'))
+            
+    except Exception as e:
+        if conn is not None:
+            conn.rollback()
+        flash(f'Error: {str(e)}', 'error')
+        return redirect(url_for('data_input.fluid_intake'))
+    finally:
+        if conn is not None:
+            conn.close()

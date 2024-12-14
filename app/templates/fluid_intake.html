@@ -3,12 +3,16 @@
 
 {% block content %}
     <h2 class = "center-text"> Fluid Intake Form </h2>
-    <form method="POST" action="{{ url_for('data_input.submit_fluid_intake') }}" class="form-container">
+    <form method="POST" action="{{ url_for('data_input.submit_fluid_intake') }}" 
+    class="form-container" onsubmit="return check_staff_initials()">
+    <input type="hidden" name="unit_name" value="{{ request.args.get('unit_name') }}">
+    <input type="hidden" name="resident_initials" value="{{ request.args.get('resident_initials') }}">
+    
         <div class = 'form-group'>
         <label for="fluid">Select fluid:</label>
-            <select id="fluid" name="fluid_name">
+            <select id="fluid" name="fluid_name" required>
                 <option value="">--Select Fluid--</option>
-                {% for fluid in fluids %}
+                {% for fluid in fluid_list %}
                     <option value="{{ fluid}}">{{ fluid }}</option>
                 {% endfor %}
             </select>
@@ -41,4 +45,23 @@
             document.getElementById('input_time').value = `${hours}:${minutes}`;
         });
     </script>
+
+    <script>
+        // Check staff initials input field for valid input
+        function check_staff_initials() {
+            const staffInitials = document.getElementById('staff_initials').value.toUpperCase();
+            // Add regex validation for staff initials format (2 letters followed by 2 numbers)
+            const regex = /^[A-Z]{2}\d{2}$/;
+            
+            if (!regex.test(staffInitials)) {
+            alert('Staff initials must be 2 letters followed by 2 numbers');
+            return false;
+            }
+            return true;
+            }
+
+
+    </script>
+
+
 {% endblock %}
