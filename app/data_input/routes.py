@@ -41,7 +41,7 @@ def data_input_logic():
                             unit_name=unit_name, 
                             resident_initials=resident_initials))
     else:
-        return render_template('here.html')
+        return render_template('under_construction.html')
 
 # Fluid intake INPUT    
 @data_input_bp.route('/fluid_intake')
