@@ -72,11 +72,13 @@ def submit_fluid_intake():
         with conn.cursor() as cursor:
             # Get form data
             input_time = request.form.get('input_time')
-            timestamp = datetime.strptime(input_time, '%H:%M').time()
+            #timestamp = datetime.strptime(input_time, '%Y-%m-%d %H:%M').time()
+            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')
             fluid_name = request.form.get('fluid_name')
             fluid_volume = request.form.get('fluid_volume')
             fluid_note = request.form.get('fluid_note')
             staff_initials = request.form.get('staff_initials')
+            resident_initials = request.form.get('resident_initials')
             
             # Validate staff initials
             cursor.execute('SELECT 1 FROM staff_list WHERE staff_initials = %s', 
@@ -90,9 +92,9 @@ def submit_fluid_intake():
             # Insert data
             cursor.execute("""
                 INSERT INTO fluid_chart 
-                (timestamp, fluid_name, fluid_volume, fluid_note, staff_initials)
-                VALUES (%s, %s, %s, %s, %s)
-                """, (timestamp, fluid_name, fluid_volume, fluid_note, staff_initials))
+                (timestamp, resident_initials, fluid_name, fluid_volume, fluid_note, staff_initials)
+                VALUES (%s, %s, %s, %s, %s, %s)
+                """, (timestamp, resident_initials, fluid_name, fluid_volume, fluid_note, staff_initials))
             
             conn.commit()
             flash('Data updated successfully', 'success')

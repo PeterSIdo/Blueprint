@@ -58,6 +58,7 @@ def auth():
 
     return render_template('auth.html')
 
+
 def logged_in(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):

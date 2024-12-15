@@ -74,6 +74,6 @@ def main(table_name, csv_file):
 
 if __name__ == "__main__":
     # You can change these values to create and insert data into different tables
-    table_name = 'unit_list'
-    csv_file = 'C:/Users/Peter/Blueprint/csv/unit_list.csv'
+    table_name = 'fluid_chart'
+    csv_file = 'C:/Users/Peter/Blueprint/csv/fluid_chart.csv'
     main(table_name, csv_file)
