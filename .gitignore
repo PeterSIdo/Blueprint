@@ -1,7 +1,32 @@
+# Virtual Environment
 venv/
-.vscode/
-*.pyc
-**/__pycache__/
+
+# Python cache files
+__pycache__/
 *.py[cod]
+*$py.class
+
+# Distribution/packaging
+dist/
+build/
+*.egg-info/
+
+# Environment variables
+.env
 csv/
 text/
+
+# IDE settings (if using PyCharm/VS Code)
+.idea/
+.vscode/
+
+# Database files
+*.db
+*.sqlite3
+
+# Logs
+*.log
+
+# Blueprint specific
+app/__pycache__/
+app/*/__pycache__/
