@@ -8,8 +8,8 @@ class Config:
     DB_USER = os.environ.get('DB_USER', 'postgres')
     DB_PASS = os.environ.get('DB_PASS', 'jelszo')
     
-    #DB_HOST = os.environ.get('DB_HOST', '34.105.189.70') # External IP access
-    DB_HOST = os.environ.get('DB_HOST', '172.24.250.3') # Internal Google access
+    DB_HOST = os.environ.get('DB_HOST', '34.105.189.70') # External IP access
+    #DB_HOST = os.environ.get('DB_HOST', '172.24.250.3') # Internal Google access
     
     DB_PORT = os.environ.get('DB_PORT', '5432')
     DB_MIN_CONNECTIONS = 1
