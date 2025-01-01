@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 import time
 
 # Timeout variable for a session 
-timeout = 1
+timeout = 10
 
 @auth_bp.route('/auth', methods=['GET', 'POST'])
 def auth():

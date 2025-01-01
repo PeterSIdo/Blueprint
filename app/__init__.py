@@ -9,6 +9,7 @@ from app.login.routes import login_bp as login_bp
 from app.auth.routes import auth_bp as auth_bp
 from app.db_connection import db_connection_bp as db_connection_bp
 from app.data_input.routes import data_input_bp as data_input_bp
+from app.data_output.routes import data_output_bp as data_output_bp
 from app.admin.routes import admin_bp as admin_bp
 from app.carer.routes import carer_bp as carer_bp
 
@@ -23,6 +24,7 @@ def create_app():
     app.register_blueprint(login_bp)
     app.register_blueprint(db_connection_bp)
     app.register_blueprint(data_input_bp)
+    app.register_blueprint(data_output_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(carer_bp)
 

@@ -8,4 +8,3 @@ from app.auth.routes import logged_in
 def carer_menu():
     return render_template('carer_menu.html')
 
-

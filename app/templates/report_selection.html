@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="center-text">Report Selection</h2>
+<form method="POST" action="{{ url_for('data_output.report_selection') }}" class="form-container" id="report-form">
+    <div class="form-group">
+        <label for="unit_name">Unit Name:</label>
+        <select id="unit_name" name="unit_name" required>
+            <option value="">Select Unit</option>
+            {% for unit in units %}
+                <option value="{{ unit[0] }}">{{ unit[0] }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="resident_initials">Resident:</label>
+        <select id="resident_initials" name="resident_initials" required>
+            <option value="">Select Resident</option>
+            <!-- Residents will be populated dynamically -->
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="service_name">Select Report:</label>
+        <select id="service_name" name="service_name" required>
+            <option value="">Select Report</option>
+            {% for service in services %}
+                <option value="{{ service[0] }}">{{ service[0] }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="start_date">Start Date:</label>
+        <input type="date" id="start_date" name="start_date" value="{{ current_date }}" required>
+    </div>
+    <div class="form-group">
+        <label for="end_date">End Date:</label>
+        <input type="date" id="end_date" name="end_date" value="{{ current_date }}" required>
+    </div>
+    <button type="submit">Continue</button>
+</form>
+
+<script>
+    document.getElementById('unit_name').addEventListener('change', function() {
+        var unitName = this.value;
+        var residentSelect = document.getElementById('resident_initials');
+        
+        // Clear current options
+        residentSelect.innerHTML = '<option value="">Select Resident</option>';
+        
+        if (unitName) {
+            fetch(`/get_residents?unit_name=${unitName}`)
+            .then(response => response.json())
+            .then(data => {
+                data.residents.forEach(resident => {
+                    var option = document.createElement('option');
+                    option.value = resident;
+                    option.text = resident;
+                    residentSelect.add(option);
+                });
+            })
+            .catch(error => console.error('Error fetching residents:', error));
+        }
+    });
+</script>
+{% endblock %}
+  
