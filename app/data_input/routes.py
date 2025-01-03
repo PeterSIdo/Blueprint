@@ -40,10 +40,14 @@ def data_input_logic():
         return redirect(url_for('data_input.fluid_intake', 
                             unit_name=unit_name, 
                             resident_initials=resident_initials))
+    if service_name == 'food intake':
+        return redirect(url_for('data_input.food_intake', 
+                            unit_name=unit_name, 
+                            resident_initials=resident_initials))
     else:
         return render_template('under_construction.html')
 
-# Fluid intake INPUT    
+# Fluid intake     
 @data_input_bp.route('/fluid_intake')
 def fluid_intake():
     unit_name = request.args.get('unit_name')
@@ -108,3 +112,48 @@ def submit_fluid_intake():
     finally:
         if conn is not None:
             conn.close()
+            
+@data_input_bp.route('/food_intake')
+def food_intake():
+    unit_name = request.args.get('unit_name')
+    resident_initials = request.args.get('resident_initials')
+    
+    conn = get_connection()
+    with conn.cursor() as cursor:
+        cursor.execute("""
+            SELECT DISTINCT food_name FROM food_list ORDER BY food_name 
+        """)
+        food_list = [row[0] for row in cursor.fetchall()]
+    conn.close()
+    
+    return render_template('food_intake_form.html', food_list=food_list, unit_name=unit_name, resident_initials=resident_initials)
+
+# c:/Users/Peter/Documents/Care-Home-4/app/data_collection/routes.py
+
+@data_input_bp.route('/submit_food_intake', methods=['POST'])
+def submit_food_intake():
+    unit_name = request.args.get('unit_name')
+    resident_initials = request.form.get('resident_initials')
+    food_name = request.form.get('food_name')  # Updated variable name
+    food_volume = request.form.get('food_volume')
+    food_note = request.form.get('food_note')
+    input_time = request.form.get('input_time')  # Retrieve input_time from the form data
+    staff_initials = request.form.get('staff_initials').upper()  # Convert to uppercase
+    timestamp = datetime.now().strftime('%Y-%m-%d') + ' ' + input_time # + ':00'
+
+    conn = get_connection()
+    with conn.cursor() as cursor:
+        cursor = conn.cursor()
+
+    # Validation snippet to check if staff_initials exist in the staff table
+
+
+        cursor.execute('''
+            INSERT INTO food_chart (timestamp, resident_initials, food_name, food_amount, food_note, staff_initials)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        ''', (timestamp, resident_initials,food_name, food_volume, food_note, staff_initials))
+        conn.commit()
+        conn.close()
+
+    flash('Food intake recorded successfully!', 'success')
+    return redirect(url_for('data_input.food_intake', unit_name=unit_name, resident_initials=resident_initials))
