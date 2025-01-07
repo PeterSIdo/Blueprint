@@ -71,17 +71,17 @@ def report_selection_logic():
     if service_name == 'fluid chart':
         return redirect(url_for('data_output.report_fluid', unit_name=unit_name, resident_initials=resident_initials, start_date=start_date, end_date=end_date))
     elif service_name == 'food chart':
-        return redirect(url_for('reports.report_food', unit_name=unit_name, resident_initials=resident_initials, start_date=start_date, end_date=end_date))
+        return redirect(url_for('data_output.report_food', unit_name=unit_name, resident_initials=resident_initials, start_date=start_date, end_date=end_date))
     elif service_name == 'personal care chart':
-        return redirect(url_for('reports.report_personal_care', unit_name=unit_name, resident_initials=resident_initials, start_date=start_date, end_date=end_date))
+        return redirect(url_for('data_output.report_personal_care', unit_name=unit_name, resident_initials=resident_initials, start_date=start_date, end_date=end_date))
     elif service_name == 'cardex chart':
-        return redirect(url_for('reports.report_cardex', unit_name=unit_name, resident_initials=resident_initials, start_date=start_date, end_date=end_date))
+        return redirect(url_for('data_output.report_cardex', unit_name=unit_name, resident_initials=resident_initials, start_date=start_date, end_date=end_date))
     elif service_name == 'care frequency chart':
-        return redirect(url_for('reports.report_care_frequency', unit_name=unit_name, resident_initials=resident_initials, start_date=start_date, end_date=end_date))
+        return redirect(url_for('data_output.report_care_frequency', unit_name=unit_name, resident_initials=resident_initials, start_date=start_date, end_date=end_date))
     elif service_name == 'bowels observation':
-        return redirect(url_for('reports.report_bowels', unit_name=unit_name, resident_initials=resident_initials, start_date=start_date, end_date=end_date))
+        return redirect(url_for('data_output.report_bowels', unit_name=unit_name, resident_initials=resident_initials, start_date=start_date, end_date=end_date))
     elif service_name == 'all daily records': 
-        return redirect(url_for('reports.report_all_daily_records', unit_name=unit_name, resident_initials=resident_initials, start_date=start_date, end_date=end_date))
+        return redirect(url_for('data_output.report_all_daily_records', unit_name=unit_name, resident_initials=resident_initials, start_date=start_date, end_date=end_date))
     else:
         return redirect(url_for('login.login'))
 
@@ -138,3 +138,34 @@ def fetch_and_summarize_fluid_volume(resident_initials, start_date, end_date):
     
     total_fluid_volume = sum(row[0] for row in data)
     return total_fluid_volume
+
+# Report food
+@data_output_bp.route('/report_food')
+def report_food():
+    resident_initials = request.args.get('resident_initials')
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT resident_initials, timestamp, food_name, food_amount, food_note, staff_initials 
+        FROM food_chart 
+        WHERE resident_initials = %s AND timestamp BETWEEN %s AND %s
+        ORDER BY timestamp ASC
+    ''', (resident_initials, start_date + ' 00:00:00', end_date + ' 23:59:59'))
+    data = cursor.fetchall()
+    conn.close()
+
+    # Convert timestamp strings to datetime objects
+    formatted_data = []
+    for row in data:
+        row = list(row)
+        row[1] = datetime.strptime(row[1], '%Y-%m-%d %H:%M').strftime('%d-%m-%y %H:%M')  # Format without seconds
+        formatted_data.append(row)
+
+    return render_template('report_food.html',
+                        resident_initials=resident_initials, 
+                        start_date=start_date,
+                        end_date=end_date,
+                        data=formatted_data)
