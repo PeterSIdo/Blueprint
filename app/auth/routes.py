@@ -1,5 +1,6 @@
 from flask import render_template, make_response
 from app.auth import auth_bp
+from app.auth.decorators import require_valid_staff_initials
 
 from flask import request, flash, redirect, url_for, session
 from werkzeug.security import check_password_hash
@@ -104,3 +105,23 @@ def check_staff_initials():
     if result is None:
         return jsonify({'valid': False, 'message': 'Invalid staff initials'})
     return jsonify({'valid': True})
+
+def validate_staff_initials(staff_initials):
+    conn = get_connection()
+    with conn.cursor() as cursor:
+        cursor.execute('SELECT 1 FROM staff_list WHERE staff_initials = %s', (staff_initials,))
+        result = cursor.fetchone()
+        conn.close()
+        return result is not None
+
+
+# Require valid staff initials
+def require_valid_staff_initials(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        staff_initials = request.form.get('staff_initials')
+        if not validate_staff_initials(staff_initials):
+            flash('Invalid staff initials. Please check and try again.', 'amber')
+            return redirect(url_for('data_input.collect_data'))
+        return f(*args, **kwargs)
+    return decorated_function

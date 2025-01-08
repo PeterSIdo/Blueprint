@@ -3,6 +3,7 @@ from flask import render_template, session, request, redirect, url_for, flash, j
 from app.data_input import data_input_bp
 from app.db_connection.conn import get_connection
 from datetime import datetime
+from app.auth.decorators import require_valid_staff_initials
 
 
 
@@ -68,6 +69,7 @@ def fluid_intake():
     
     
 # Submit fluid intake
+@require_valid_staff_initials
 @data_input_bp.route('/submit_fluid_intake', methods=['POST'])
 def submit_fluid_intake():
     conn = None
@@ -83,15 +85,7 @@ def submit_fluid_intake():
             fluid_note = request.form.get('fluid_note')
             staff_initials = request.form.get('staff_initials')
             resident_initials = request.form.get('resident_initials')
-            
-            # Validate staff initials
-            cursor.execute('SELECT 1 FROM staff_list WHERE staff_initials = %s', 
-                    (staff_initials,))
-            if cursor.fetchone() is None:
-                flash('Invalid staff initials. Please check and try again.', 'amber')
-                return redirect(url_for('data_input.fluid_intake', 
-                    unit_name=request.form.get('unit_name'), 
-                    resident_initials=request.form.get('resident_initials')))
+
             
             # Insert data
             cursor.execute("""
@@ -128,9 +122,9 @@ def food_intake():
     
     return render_template('food_intake_form.html', food_list=food_list, unit_name=unit_name, resident_initials=resident_initials)
 
-# c:/Users/Peter/Documents/Care-Home-4/app/data_collection/routes.py
 
 @data_input_bp.route('/submit_food_intake', methods=['POST'])
+@require_valid_staff_initials
 def submit_food_intake():
     unit_name = request.args.get('unit_name')
     resident_initials = request.form.get('resident_initials')
@@ -144,9 +138,6 @@ def submit_food_intake():
     conn = get_connection()
     with conn.cursor() as cursor:
         cursor = conn.cursor()
-
-    # Validation snippet to check if staff_initials exist in the staff table
-
 
         cursor.execute('''
             INSERT INTO food_chart (timestamp, resident_initials, food_name, food_amount, food_note, staff_initials)

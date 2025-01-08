@@ -3,6 +3,8 @@ from flask import render_template, session, request, redirect, url_for, flash, j
 from app.data_output import data_output_bp
 from app.db_connection.conn import get_connection
 from datetime import datetime
+from app.auth.decorators import require_valid_staff_initials
+
 
 @data_output_bp.route('/test')
 def test():
@@ -72,18 +74,9 @@ def report_selection_logic():
         return redirect(url_for('data_output.report_fluid', unit_name=unit_name, resident_initials=resident_initials, start_date=start_date, end_date=end_date))
     elif service_name == 'food chart':
         return redirect(url_for('data_output.report_food', unit_name=unit_name, resident_initials=resident_initials, start_date=start_date, end_date=end_date))
-    elif service_name == 'personal care chart':
-        return redirect(url_for('data_output.report_personal_care', unit_name=unit_name, resident_initials=resident_initials, start_date=start_date, end_date=end_date))
-    elif service_name == 'cardex chart':
-        return redirect(url_for('data_output.report_cardex', unit_name=unit_name, resident_initials=resident_initials, start_date=start_date, end_date=end_date))
-    elif service_name == 'care frequency chart':
-        return redirect(url_for('data_output.report_care_frequency', unit_name=unit_name, resident_initials=resident_initials, start_date=start_date, end_date=end_date))
-    elif service_name == 'bowels observation':
-        return redirect(url_for('data_output.report_bowels', unit_name=unit_name, resident_initials=resident_initials, start_date=start_date, end_date=end_date))
-    elif service_name == 'all daily records': 
-        return redirect(url_for('data_output.report_all_daily_records', unit_name=unit_name, resident_initials=resident_initials, start_date=start_date, end_date=end_date))
+
     else:
-        return redirect(url_for('login.login'))
+        return redirect(url_for('data_output.report_selection'))
 
 @data_output_bp.route('/get_residents', methods=['GET'])
 def get_residents():
