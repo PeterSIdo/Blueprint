@@ -2,8 +2,10 @@
 from flask import render_template, session, request, redirect, url_for, flash, jsonify
 from app.data_input import data_input_bp
 from app.db_connection.conn import get_connection
-from datetime import datetime
+from datetime import datetime, timezone
 from app.auth.decorators import require_valid_staff_initials
+
+uk_timestamp = datetime.now(timezone.utc).astimezone()
 
 import speech_recognition as sr
 
@@ -65,8 +67,12 @@ def data_input_logic():
         return redirect(url_for('data_input.cardex_input', 
                             unit_name=unit_name, 
                             resident_initials=resident_initials))
+        
+    if service_name == 'care frequency':
+        return redirect(url_for('data_input.care_frequency', 
+                            unit_name=unit_name, 
+                            resident_initials=resident_initials))
 
-    
     else:
         return render_template('under_construction.html')
 
@@ -243,3 +249,51 @@ def submit_cardex():
 
     flash('Cardex entry recorded successfully!', 'success')
     return redirect(url_for('data_input.cardex_input', unit_name=request.form.get('unit_name'), resident_initials=resident_initials))
+
+# Care frequency input
+@data_input_bp.route('/care_frequency')
+def care_frequency():
+    resident_initials = request.args.get('resident_initials')
+    return render_template('care_frequency_form.html', resident_initials=resident_initials)
+
+@data_input_bp.route('/submit_care_frequency', methods=['POST'])
+@require_valid_staff_initials
+def submit_care_frequency():
+    # Collect form data
+    resident_initials = request.form.get('resident_initials')
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    mattress_appropriate = request.form.get('mattress_appropriate')
+    cushion_appropriate = request.form.get('cushion_appropriate')
+    functionality_check = request.form.get('functionality_check')
+    pressure_areas_checked = request.form.get('pressure_areas_checked')
+    redness_present = request.form.get('redness_present')
+    position = request.form.get('position')
+    incontinence_urine = request.form.get('incontinence_urine')
+    incontinence_bowels = request.form.get('incontinence_bowels')
+    diet_intake = request.form.get('diet_intake')
+    fluid_intake = request.form.get('fluid_intake')
+    supplement_intake = request.form.get('supplement_intake')
+    staff_initials = request.form.get('staff_initials').upper()
+    notes = request.form.get('notes')
+
+    # Insert data into the database
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
+        INSERT INTO care_frequency_chart (
+            resident_initials, timestamp, mattress_appropriate, cushion_appropriate,
+            functionality_check, pressure_areas_checked, redness_present, position,
+            incontinence_urine, incontinence_bowels, diet_intake, fluid_intake,
+            supplement_intake, staff_initials, notes
+        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    ''', (
+        resident_initials, timestamp, mattress_appropriate, cushion_appropriate,
+        functionality_check, pressure_areas_checked, redness_present, position,
+        incontinence_urine, incontinence_bowels, diet_intake, fluid_intake,
+        supplement_intake, staff_initials, notes
+    ))
+    conn.commit()
+    conn.close()
+
+    flash('Care frequency data submitted successfully!', 'success')
+    return redirect(url_for('carer.carer_menu'))

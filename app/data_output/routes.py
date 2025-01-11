@@ -78,6 +78,8 @@ def report_selection_logic():
         return redirect(url_for('data_output.report_personal_care', unit_name=unit_name, resident_initials=resident_initials, start_date=start_date, end_date=end_date))
     if service_name == 'cardex chart':
         return redirect(url_for('data_output.report_cardex', unit_name=unit_name, resident_initials=resident_initials, start_date=start_date, end_date=end_date))
+    if service_name == 'care frequency chart':
+        return redirect(url_for('data_output.report_care_frequency', unit_name=unit_name, resident_initials=resident_initials, start_date=start_date, end_date=end_date))
 
     else:
         return redirect(url_for('data_output.report_selection'))
@@ -95,6 +97,7 @@ def get_residents():
 
 
 @data_output_bp.route('/report_fluid')
+@require_valid_staff_initials
 def report_fluid():
     resident_initials = request.args.get('resident_initials')
     start_date = request.args.get('start_date')
@@ -138,6 +141,7 @@ def fetch_and_summarize_fluid_volume(resident_initials, start_date, end_date):
 
 # Report food
 @data_output_bp.route('/report_food')
+@require_valid_staff_initials
 def report_food():
     resident_initials = request.args.get('resident_initials')
     start_date = request.args.get('start_date')
@@ -168,6 +172,7 @@ def report_food():
                         data=formatted_data)
 # Report personal care    
 @data_output_bp.route('/report_personal_care')
+@require_valid_staff_initials
 def report_personal_care():
     unit_name = request.args.get('unit_name')
     resident_initials = request.args.get('resident_initials')
@@ -193,6 +198,7 @@ def report_personal_care():
     
 # Report cardex
 @data_output_bp.route('/report_cardex')
+@require_valid_staff_initials
 def report_cardex():
     resident_initials = request.args.get('resident_initials')
     start_date = request.args.get('start_date')
@@ -220,4 +226,44 @@ def report_cardex():
                         start_date=start_date,
                         end_date=end_date, 
                         resident_initials=resident_initials,
+                        data=formatted_data)
+    
+@data_output_bp.route('/report_care_frequency')
+
+def report_care_frequency():
+    resident_initials = request.args.get('resident_initials')
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT timestamp, mattress_appropriate, cushion_appropriate, functionality_check, 
+            pressure_areas_checked, redness_present, position, incontinence_urine, 
+            incontinence_bowels, diet_intake, fluid_intake, supplement_intake, 
+            staff_initials, notes
+        FROM care_frequency_chart
+        WHERE resident_initials = %s AND timestamp BETWEEN %s AND %s
+        ORDER BY timestamp ASC
+    ''', (resident_initials, start_date + ' 00:00:00', end_date + ' 23:59:59'))
+    data = cursor.fetchall()
+    conn.close()
+
+    from datetime import datetime
+
+    # Format timestamps
+    formatted_data = []
+    for row in data:
+        row = list(row)  # Convert row to a list
+        # Only format if it's a string, otherwise just format the existing datetime
+        if isinstance(row[0], str):
+            row[0] = datetime.strptime(row[0], '%Y-%m-%d %H:%M:%S').strftime('%d-%m-%y %H:%M')
+        else:
+            row[0] = row[0].strftime('%d-%m-%y %H:%M')
+        formatted_data.append(row)
+
+    return render_template('report_care_frequency.html', 
+                        resident_initials=resident_initials,
+                        start_date=start_date,
+                        end_date=end_date, 
                         data=formatted_data)

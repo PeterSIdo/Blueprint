@@ -74,6 +74,6 @@ def main(table_name, csv_file):
 
 if __name__ == "__main__":
     # You can change these values to create and insert data into different tables
-    table_name = 'cardex_chart'
-    csv_file = 'C:/Users/Peter/Blueprint/csv/cardex_chart.csv'
+    table_name = 'care_frequency_chart'
+    csv_file = 'C:/Users/Peter/Blueprint/csv/care_frequency_chart.csv'
     main(table_name, csv_file)
