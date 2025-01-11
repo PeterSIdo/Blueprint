@@ -72,8 +72,12 @@ def report_selection_logic():
 
     if service_name == 'fluid chart':
         return redirect(url_for('data_output.report_fluid', unit_name=unit_name, resident_initials=resident_initials, start_date=start_date, end_date=end_date))
-    elif service_name == 'food chart':
+    if service_name == 'food chart':
         return redirect(url_for('data_output.report_food', unit_name=unit_name, resident_initials=resident_initials, start_date=start_date, end_date=end_date))
+    if service_name == 'personal care chart':
+        return redirect(url_for('data_output.report_personal_care', unit_name=unit_name, resident_initials=resident_initials, start_date=start_date, end_date=end_date))
+    if service_name == 'cardex chart':
+        return redirect(url_for('data_output.report_cardex', unit_name=unit_name, resident_initials=resident_initials, start_date=start_date, end_date=end_date))
 
     else:
         return redirect(url_for('data_output.report_selection'))
@@ -161,4 +165,59 @@ def report_food():
                         resident_initials=resident_initials, 
                         start_date=start_date,
                         end_date=end_date,
+                        data=formatted_data)
+# Report personal care    
+@data_output_bp.route('/report_personal_care')
+def report_personal_care():
+    unit_name = request.args.get('unit_name')
+    resident_initials = request.args.get('resident_initials')
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT timestamp, personal_care_type, personal_care_note, personal_care_duration, staff_initials
+        FROM personal_care_chart
+        WHERE resident_initials = %s AND timestamp BETWEEN %s AND %s
+        ORDER BY timestamp ASC
+    ''', (resident_initials, start_date + ' 00:00:00', end_date + ' 23:59:59'))
+    personal_care_records = cursor.fetchall()
+    
+    conn.close()
+    return render_template('report_personal_care.html',
+                        personal_care_records=personal_care_records, 
+                        unit_name=unit_name,
+                        start_date=start_date,
+                        end_date=end_date, 
+                        resident_initials=resident_initials)
+    
+# Report cardex
+@data_output_bp.route('/report_cardex')
+def report_cardex():
+    resident_initials = request.args.get('resident_initials')
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT resident_initials, timestamp, cardex_text, staff_initials 
+        FROM cardex_chart 
+        WHERE resident_initials = %s AND timestamp BETWEEN %s AND %s
+        ORDER BY timestamp ASC
+    ''', (resident_initials, start_date + ' 00:00:00', end_date + ' 23:59:59'))
+    data = cursor.fetchall()
+    conn.close()
+
+    # Convert timestamp strings to datetime objects
+    formatted_data = []
+    for row in data:
+        row = list(row)
+        row[1] = datetime.strptime(row[1], '%Y-%m-%d %H:%M:%S').strftime('%d-%m-%y %H:%M')  # Format without seconds
+        formatted_data.append(row)
+
+    return render_template('report_cardex.html', 
+                        start_date=start_date,
+                        end_date=end_date, 
+                        resident_initials=resident_initials,
                         data=formatted_data)

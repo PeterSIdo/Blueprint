@@ -2,26 +2,28 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h2 class = "center-text">Food Intake Form</h2>
-    <form method="POST" action="{{ url_for('data_input.submit_food_intake') }}" class="form-container">
-        <input type="hidden" name="unit_name" value="{{ request.args.get('unit_name') }}">
-        <input type="hidden" name="resident_initials" value="{{ request.args.get('resident_initials') }}">
+    <h2 class = "center-text">Personal Care Form</h2>
+    <h4> for {{ resident_initials}} </h4>
+    <form method="POST" action="{{ url_for('data_input.submit_personal_care') }}" class="form-container">
+        <input type="hidden" name="unit_name" value="{{ unit_name }}">
+        <input type="hidden" name="resident_initials" value="{{ resident_initials }}">
         <div class="form-group">
-            <label for="food_name">Food Name:</label> 
-            <select id="food_name" name="food_name" required> 
-                {% for food in food_list %}
-                    <option value="{{ food }}">{{ food }}</option>
+            <label for="personal_care_type">Personal Care Type:</label>
+            <select id="personal_care_type" name="personal_care_type" required>
+                {% for care in personal_care_list %}
+                    <option value="{{ care }}">{{ care }}</option>
                 {% endfor %}
             </select>
         </div>
         <div class="form-group">
-            <label for="food_volume">Food Amount:</label>
-            <input type="text" id="food_volume" name="food_volume" class="no-spinner" required placeholder="Enter '0' if refused">
+            <label for="personal_care_note">Note:</label>
+            <textarea id="personal_care_note" name="personal_care_note" placeholder="Enter any notes here"></textarea>
         </div>
         <div class="form-group">
-            <label for="food_note">Note:</label>
-            <textarea id="food_note" name="food_note" placeholder="Refused"></textarea>
+            <label for="personal_care_duration">Duration:</label>
+            <textarea id="personal_care_duration" name="personal_care_duration" placeholder="Enter time of the care in minutes"></textarea>
         </div>
+
         <div class="form-group">
             <label for="input_time">Time of Input:</label>
             <input type="time" id="input_time" name="input_time" required>
@@ -30,7 +32,6 @@
             <label for="staff_initials">Staff Initials:</label>
             <input type="text" id="staff_initials" name="staff_initials" required>
         </div>
-        
         <button type="submit">Submit</button>
     </form>
 
