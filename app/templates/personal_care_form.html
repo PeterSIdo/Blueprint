@@ -3,7 +3,7 @@
 
 {% block content %}
     <h2 class = "center-text">Personal Care Form</h2>
-    <h4> for {{ resident_initials}} </h4>
+    <h4> Resident name {{ resident_initials}} </h4>
     <form method="POST" action="{{ url_for('data_input.submit_personal_care') }}" class="form-container">
         <input type="hidden" name="unit_name" value="{{ unit_name }}">
         <input type="hidden" name="resident_initials" value="{{ resident_initials }}">

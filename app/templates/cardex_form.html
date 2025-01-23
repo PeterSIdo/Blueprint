@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h2>Cardex Form</h2>
+    <h2>Kardex Form</h2>
     <form method="POST" action="{{ url_for('data_input.submit_cardex') }}" class="form-container">
         <input type="hidden" name="unit_name" value="{{ request.args.get('unit_name') }}">
         <input type="hidden" name="resident_initials" value="{{ request.args.get('resident_initials') }}">

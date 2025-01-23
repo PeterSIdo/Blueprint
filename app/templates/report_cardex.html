@@ -3,14 +3,15 @@
 
 {% block content %}
     <h3>Cardex Report</h3>
-    <h4> for {{ resident_initials }} from {{ start_date }} to {{ end_date }}</h4>
+    <h4> Resident Name: {{ resident_initials }} </h4>
+    <h5> Period: {{ start_date }} <> {{ end_date }}</h5>
     <hr>
     <table class="table table-striped">
         <thead>
             <tr>
                 
                 <th>Date/Time</th>
-                <th>Cardex Text</th>
+                <th>Kardex Text</th>
                 <th>Staff Initials</th>
             </tr>
         </thead>

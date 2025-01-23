@@ -72,6 +72,11 @@ def data_input_logic():
         return redirect(url_for('data_input.care_frequency', 
                             unit_name=unit_name, 
                             resident_initials=resident_initials))
+        
+    if service_name == 'bowels observation':
+        return redirect(url_for('data_input.bowel_observation', 
+                            unit_name=unit_name, 
+                            resident_initials=resident_initials))
 
     else:
         return render_template('under_construction.html')
@@ -296,4 +301,47 @@ def submit_care_frequency():
     conn.close()
 
     flash('Care frequency data submitted successfully!', 'success')
+    return redirect(url_for('carer.carer_menu'))
+
+# Bowel observation input
+@data_input_bp.route('/bowel_observation')
+def bowel_observation():
+    unit_name = request.args.get('unit_name')
+    resident_initials = request.args.get('resident_initials')
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT id, bowel_type, bowel_size, bowel_mode FROM bowel_list')
+    bowel_list = cursor.fetchall()
+    conn.close()
+    return render_template('bowel_observation_form.html', bowel_list=bowel_list, unit_name=unit_name, resident_initials=resident_initials)
+
+@data_input_bp.route('/submit_bowel_observation', methods=['POST'])
+def submit_bowel_observation():
+    resident_initials = request.form.get('resident_initials')
+    bowel_type = request.form.get('bowel_type')
+    bowel_size = request.form.get('bowel_size')
+    bowel_mode = request.form.get('bowel_mode')
+    bowel_note = request.form.get('bowel_note')
+    input_time = request.form.get('input_time')
+    staff_initials = request.form.get('staff_initials').upper()
+    timestamp = datetime.now().strftime('%Y-%m-%d') + ' ' + input_time + ':00'
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute('SELECT 1 FROM staff_list WHERE staff_initials = %s', (staff_initials,))
+    if cursor.fetchone() is None:
+        conn.close()
+        flash('Invalid staff initials. Please check and try again.', 'amber')
+        return redirect(url_for('data_collection.bowel_observation', unit_name=request.form.get('unit_name'), resident_initials=resident_initials))
+
+
+    cursor.execute('''
+        INSERT INTO bowel_chart (timestamp, resident_initials, bowel_type, bowel_size, bowel_mode, bowel_note, staff_initials)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
+    ''', (timestamp, resident_initials, bowel_type, bowel_size, bowel_mode, bowel_note, staff_initials))
+    conn.commit()
+    conn.close()
+
+    flash('Bowel observation recorded successfully!', 'success')
     return redirect(url_for('carer.carer_menu'))

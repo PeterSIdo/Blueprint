@@ -3,12 +3,12 @@
 
 {% block content %}
     <h2>Personal Care Report </h2>
-    <h4> for {{ resident_initials }} </h4>
+    <h4> Resident Name: {{ resident_initials }} </h4>
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>Timestamp</th>
-                <th>Personal Care Type</th>
+                <th>Date/Time</th>
+                <th>Personal Care</th>
                 <th>Note</th>
                 <th>Duration</th>
                 <th>Staff Initials</th>
@@ -17,11 +17,11 @@
         <tbody>
             {% for record in personal_care_records %}
                 <tr>
-                    <td>{{ record[0] }}</td>
                     <td>{{ record[1] }}</td>
                     <td>{{ record[2] }}</td>
                     <td>{{ record[3] }}</td>
                     <td>{{ record[4] }}</td>
+                    <td>{{ record[5] }}</td>
                 </tr>
             {% endfor %}
         </tbody>
