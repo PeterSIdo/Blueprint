@@ -2,6 +2,7 @@ from flask import render_template, session
 from app.main import main_bp
 from app.db_connection.conn import get_connection
 
+
 @main_bp.route('/')
 def index():
     return render_template('index.html')

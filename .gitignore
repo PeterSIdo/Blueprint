@@ -15,6 +15,7 @@ build/
 .env
 csv/
 text/
+py_files/
 
 # IDE settings (if using PyCharm/VS Code)
 .idea/

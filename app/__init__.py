@@ -12,6 +12,8 @@ from app.data_input.routes import data_input_bp as data_input_bp
 from app.data_output.routes import data_output_bp as data_output_bp
 from app.admin.routes import admin_bp as admin_bp
 from app.carer.routes import carer_bp as carer_bp
+from app.staff_board.routes import staff_board_bp as staff_board_bp
+
 
 
 def create_app():
@@ -27,5 +29,7 @@ def create_app():
     app.register_blueprint(data_output_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(carer_bp)
+    app.register_blueprint(staff_board_bp)
+
 
     return app
