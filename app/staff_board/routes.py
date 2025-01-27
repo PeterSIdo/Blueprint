@@ -45,26 +45,10 @@ def create_staff_log():
 @staff_board_bp.route('/view_staff_log', methods=['GET'])
 def view_staff_log():
     # Get filter parameters from request arguments
-    start_date_str = request.args.get('start_date')
-    end_date_str = request.args.get('end_date')
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
     task_completed = request.args.get('task_completed')  # 'all', 'completed', 'not_completed'
     current_date = get_current_uk_date()
-    
-        # Initialize start_date and end_date
-    start_date = None
-    end_date = None
-
-    # Convert date strings to datetime objects
-    if start_date_str and end_date_str:
-        start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
-        end_date = datetime.strptime(end_date_str, '%Y-%m-%d')
-
-        # Increase end_date by one day
-        #end_date += timedelta(days=1)
-
-        # Convert back to string if necessary for the query
-        start_date_str = start_date.strftime('%Y-%m-%d')
-        end_date_str = end_date.strftime('%Y-%m-%d')
 
     # Connect to the database
     conn = get_connection()
@@ -106,6 +90,8 @@ def view_staff_log():
         log = list(log)
         log[4] = datetime.strptime(log[4], '%Y-%m-%dT%H:%M').strftime('%d-%m-%Y %H:%M') 
         formatted_logs.append(log)
+        
+    print(formatted_logs)
 
     return render_template('report_staff_log.html', logs=formatted_logs, current_date=current_date)
 
