@@ -41,7 +41,7 @@ def create_staff_log():
 
     return render_template('create_staff_log.html')
 
-# VIEW staff-log
+# VIEW staff-log here
 @staff_board_bp.route('/view_staff_log', methods=['GET'])
 def view_staff_log():
     # Get filter parameters from request arguments
