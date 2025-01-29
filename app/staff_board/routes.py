@@ -14,10 +14,7 @@ from app.main.utils import get_current_uk_date
 def staff_board():
     return render_template('staff_board.html')
 
-
-
-
-
+# CREATE staff_log
 @staff_board_bp.route('/create_staff_log', methods=['GET', 'POST'])
 def create_staff_log():
     if request.method == 'POST':
@@ -41,7 +38,7 @@ def create_staff_log():
 
     return render_template('create_staff_log.html')
 
-# VIEW staff-log here
+# VIEW staff-log
 @staff_board_bp.route('/view_staff_log', methods=['GET'])
 def view_staff_log():
     # Get filter parameters from request arguments
@@ -61,12 +58,9 @@ def view_staff_log():
 
     # Add date filtering
     if start_date and end_date:
-        query += ' AND timestamp BETWEEN %s AND %s'
+        query += ''' AND timestamp BETWEEN %s AND %s
+        '''
         params.extend([start_date, end_date])
-
-    # Debugging: Print the query and params
-    print("Executing query Start date:", query)
-    print("With parameters:", params)
 
     # Add task completion filtering
     if task_completed == 'completed':
@@ -75,14 +69,16 @@ def view_staff_log():
     elif task_completed == 'not_completed':
         query += ' AND task_completed = %s'
         params.append(False)
-
+        
+    # Add ordering and limited number of rows
+    query += '''
+    ORDER BY timestamp DESC
+    LIMIT 10
+    ''' 
     # Execute the query
     cursor.execute(query, params)
     logs = cursor.fetchall()
     conn.close()
-    
-    # Debugging: Print the number of logs found
-    print(f"Number of logs found: {len(logs)}")
 
     # Format the suggested_completion_time
     formatted_logs = []
@@ -91,11 +87,9 @@ def view_staff_log():
         log[4] = datetime.strptime(log[4], '%Y-%m-%dT%H:%M').strftime('%d-%m-%Y %H:%M') 
         formatted_logs.append(log)
         
-    print(formatted_logs)
-
     return render_template('report_staff_log.html', logs=formatted_logs, current_date=current_date)
 
-# Submit staff_log
+# SUBMIT staff_log
 @staff_board_bp.route('/submit_staff_log', methods=['POST'])
 def submit_staff_log():
     # Extract data from the form

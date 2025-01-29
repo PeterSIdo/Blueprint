@@ -1,24 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h2 class= "center-text"> Staff Log</h2>
+<h2 class= "center-text"> Staff Log</h2>
 
-    <style>
-        .form-row {
-            display: flex;
-            align-items: center;
-            gap: 10px; /* Adjust the gap between elements as needed */
-            margin-bottom: 15px; /* Space between rows */
-        }
-    
-        .form-row label {
-            margin-right: 5px; /* Space between label and input */
-        }
-
-        
-    </style>
-
-    <form method="get" action="{{ url_for('staff_board.view_staff_log') }}">
+    <form method="get" action="{{ url_for('staff_board.view_staff_log') }}" class="form-container">
         <div class="form-row" style="flex-direction: column;">
            <div>
                 <label for="start_date">Start Date:</label>
@@ -36,10 +21,14 @@
                     <option value="not_completed">Not Completed</option>
                 </select>
             </div>
-            <button type="submit">Filter selected</button>        
+            <button type="submit">Filter selected</button>
+            <span> The table below shows the 10 most recent logs </span>
+            <span> Choose filter <i>Start date</i> and <i>End date</i> to see more</span>
+
         </div>
-        
     </form>
+
+
     <table class="table table-striped">
         <thead>
             <tr>

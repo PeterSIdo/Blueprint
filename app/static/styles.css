@@ -1,3 +1,16 @@
+/* Row form */
+.form-row {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Adjust the gap between elements as needed */
+    margin-bottom: 15px; /* Space between rows */
+}
+
+.form-row label {
+    margin-right: 5px; /* Space between label and input */
+}
+
+
 
 /* Custom styles for header */
 .header {
