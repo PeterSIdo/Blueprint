@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <h2>Resident List</h2>
+    <a href="{{ url_for('admin.add_resident') }}">Add New Resident</a>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>First Name</th>
+            <th>Surname</th>
+            <th>Unit</th>
+            <th>Room</th>
+            <th>Initials</th>
+            <th>Unique ID</th>
+            <th>Notes</th>
+        </tr>
+        {% for resident in residents %}
+        <tr>
+            <td>{{ resident[0] }}</td>
+            <td>{{ resident[1] }}</td>
+            <td>{{ resident[2] }}</td>
+            <td>{{ resident[3] }}</td>
+            <td>{{ resident[4] }}</td>
+            <td>{{ resident[5] }}</td>
+            <td>{{ resident[6] }}</td>
+            <td>{{ resident[7] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{%endblock %}

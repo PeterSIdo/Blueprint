@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+
+    <h2 class='center-test'>Add New Resident</h2>
+    <form method="post">
+        <label for="firstname">First Name:</label>
+        <input type="text" id="firstname" name="firstname" required><br>
+
+        <label for="surname">Surname:</label>
+        <input type="text" id="surname" name="surname" required><br>
+
+        <label for="unit">Unit:</label>
+        <input type="text" id="unit" name="unit" required><br>
+
+        <label for="room">Room:</label>
+        <input type="text" id="room" name="room" required><br>
+
+        <label for="initials">Initials:</label>
+        <input type="text" id="initials" name="initials" required><br>
+
+        <label for="unique_id">Unique ID:</label>
+        <input type="text" id="unique_id" name="unique_id" required><br>
+
+        <label for="notes">Notes:</label>
+        <textarea id="notes" name="notes"></textarea><br>
+
+        <input type="submit" value="Add Resident">
+    </form>
+    <a href="{{ url_for('admin.admin_residents') }}">Back to Resident List</a>
+{% endblock %}
