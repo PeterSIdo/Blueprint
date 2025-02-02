@@ -1,17 +1,15 @@
-
-from flask import render_template, session
-from app.admin import admin_bp
+# C:\Users\Peter\Blueprint\adminpanel\routes.py
+from flask import render_template, redirect, url_for, request
+#from app.admin import admin_bp
 from app.db_connection.conn import get_connection
 from psycopg2 import sql
-from flask import render_template, request, redirect, url_for
+from adminpanel import adminpanel_bp
 
-
-
-@admin_bp.route('/admin_menu')
+@adminpanel_bp.route('/admin_menu')
 def admin_menu():
     return render_template('admin_menu.html')
 
-@admin_bp.route('/admin/residents')
+@adminpanel_bp.route('/admin/residents')
 def admin_residents():
     connection = get_connection()
     if connection is None:
@@ -25,7 +23,7 @@ def admin_residents():
     
     return render_template('admin_residents.html', residents=residents)
 
-@admin_bp.route('/admin/residents/add', methods=['GET', 'POST'])
+@adminpanel_bp.route('/admin/residents/add', methods=['GET', 'POST'])
 def add_resident():
     if request.method == 'POST':
         firstname = request.form['firstname']
@@ -51,6 +49,6 @@ def add_resident():
         cursor.close()
         connection.close()
 
-        return redirect(url_for('admin.admin_residents'))
+        return redirect(url_for('adminpanel.admin_residents'))
 
     return render_template('add_resident.html')
