@@ -1,20 +1,23 @@
-from flask import render_template, make_response
+# C:\Users\Peter\Blueprint\app\data_input\input_modules.py
+from flask import render_template, redirect, url_for, flash, jsonify, make_response
 from app.auth import auth_bp
 from app.auth.decorators import require_valid_staff_initials
 
 from flask import request, flash, redirect, url_for, session
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 from app.db_connection.conn import get_connection
 from functools import wraps
 from datetime import datetime, timedelta
 import time
+from adminpanel.forms import RegistrationForm
+from app.db_connection.conn import get_connection  # Make sure you import your database connection helper
+
 
 # Timeout variable for a session 
 timeout = 10
 
 @auth_bp.route('/auth', methods=['GET', 'POST'])
 def auth():
-
     if request.method == 'POST':
         staff_unique_id = request.form.get('staff_unique_id')
         password = request.form.get('password')
@@ -125,3 +128,48 @@ def require_valid_staff_initials(f):
             return redirect(url_for('data_input.collect_data'))
         return f(*args, **kwargs)
     return decorated_function
+
+
+# Register
+@auth_bp.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        # Extract data from form fields
+        staff_firstname = form.staff_firstname.data
+        staff_surname = form.staff_surname.data
+        staff_initials = form.staff_initials.data
+        staff_unique_id = form.staff_unique_id.data
+        staff_access = form.staff_access.data
+        password = form.password.data
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        # Check if user already exists
+        cursor.execute(
+            "SELECT * FROM staff_list WHERE staff_unique_id = %s OR staff_initials = %s", 
+            (staff_unique_id, staff_initials)
+        )
+        existing_user = cursor.fetchone()
+        if existing_user:
+            flash('Staff unique ID or initials already taken', 'error')
+            return redirect(url_for('auth.register'))
+
+        # Hash the password
+        password_hash = generate_password_hash(password)
+
+        # Insert new staff into the database
+        cursor.execute("""
+            INSERT INTO staff_list 
+            (staff_firstname, staff_surname, staff_initials, staff_unique_id, staff_access, password_hash)
+            VALUES (%s, %s, %s, %s, %s, %s)
+            """, (staff_firstname, staff_surname, staff_initials, staff_unique_id, staff_access, password_hash)
+        )
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        flash('Registration successful! Please log in.', 'success')
+        return redirect(url_for('auth.auth'))
+    return render_template('register.html', form=form)

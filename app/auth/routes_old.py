@@ -7,7 +7,7 @@ from os.path import abspath, dirname
 sys.path.append(dirname(dirname(abspath(__file__))))
 
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 from app.db_connection.conn import get_connection
 from app.auth import auth_bp
 

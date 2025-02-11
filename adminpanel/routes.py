@@ -1,54 +1,49 @@
-# C:\Users\Peter\Blueprint\adminpanel\routes.py
-from flask import render_template, redirect, url_for, request
-#from app.admin import admin_bp
-from app.db_connection.conn import get_connection
-from psycopg2 import sql
-from adminpanel import adminpanel_bp
+from flask import Blueprint, render_template, redirect, url_for, flash
+from flask_login import login_user, logout_user, login_required
+from adminpanel.models import AdminUser
+from adminpanel.forms import RegistrationForm, LoginForm
+from adminpanel.database import db
 
-@adminpanel_bp.route('/admin_menu')
-def admin_menu():
-    return render_template('admin_menu.html')
+adminpanel_bp = Blueprint('adminpanel', __name__,template_folder='templates')
 
-@adminpanel_bp.route('/admin/residents')
-def admin_residents():
-    connection = get_connection()
-    if connection is None:
-        return "Error connecting to the database."
+@adminpanel_bp.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        user = AdminUser(username=form.username.data)
+        user.set_password(form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        flash('Registration successful!', 'success')
+        return redirect(url_for('adminpanel.login'))
+    return render_template('register.html', form=form)
 
-    cursor = connection.cursor()
-    cursor.execute("SELECT * FROM resident_list")
-    residents = cursor.fetchall()
-    cursor.close()
-    connection.close()
-    
-    return render_template('admin_residents.html', residents=residents)
+@adminpanel_bp.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = AdminUser.query.filter_by(username=form.username.data).first()
+        if user and user.check_password(form.password.data):
+            login_user(user)
+            flash('Login successful!', 'success')
+            return redirect(url_for('adminpanel.dashboard'))
+        else:
+            flash('Invalid username or password', 'danger')
+    return render_template('login.html', form=form)
 
-@adminpanel_bp.route('/admin/residents/add', methods=['GET', 'POST'])
-def add_resident():
-    if request.method == 'POST':
-        firstname = request.form['firstname']
-        surname = request.form['surname']
-        unit = request.form['unit']
-        room = request.form['room']
-        initials = request.form['initials']
-        unique_id = request.form['unique_id']
-        notes = request.form['notes']
+@adminpanel_bp.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('You have been logged out.', 'info')
+    return redirect(url_for('adminpanel.login'))
 
-        connection = get_connection()
-        if connection is None:
-            return "Error connecting to the database."
+@adminpanel_bp.route('/dashboard')
+@login_required
+def dashboard():
+    return render_template('dashboard.html')
 
-        cursor = connection.cursor()
-        insert_query = sql.SQL("""
-            INSERT INTO resident_list (resident_firstname, resident_surname, resident_unit, resident_room, resident_initials, resident_unique_id, resident_notes)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
-        """)
-        cursor.execute(insert_query, (firstname, surname, unit, room, initials, unique_id, notes))
-        connection.commit()
-
-        cursor.close()
-        connection.close()
-
-        return redirect(url_for('adminpanel.admin_residents'))
-
-    return render_template('add_resident.html')
+@adminpanel_bp.route('/residents')
+@login_required
+def residents():
+    return render_template('residents.html')

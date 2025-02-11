@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<form method="POST" action="{{ url_for('auth.register') }}">
+    <label for="staff_firstname">First Name:</label>
+    <input type="text" name="staff_firstname" required>
+
+    <label for="staff_surname">Surname:</label>
+    <input type="text" name="staff_surname" required>
+
+    <label for="staff_initials">Initials:</label>
+    <input type="text" name="staff_initials" required>
+
+    <label for="staff_unique_id">Unique ID:</label>
+    <input type="text" name="staff_unique_id" required>
+
+    <label for="staff_access">Access Level:</label>
+    <select name="staff_access" required>
+        <option value="carer">Carer</option>
+        <option value="admin">Admin</option>
+        <option value="manager">Manager</option>
+        <option value="family">Family</option>
+    </select>
+
+    <label for="password">Password:</label>
+    <input type="password" name="password" required>
+
+    <input type="submit" value="Register">
+</form>
+
+{% endblock %}
