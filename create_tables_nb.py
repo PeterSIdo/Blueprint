@@ -3,7 +3,7 @@ import psycopg2
 def get_connection_nb():
     try:
         connection = psycopg2.connect(
-            dbname='care-nb',
+            dbname='care6',
             user='postgres',
             password='jelszo',
             host='34.105.189.70',
