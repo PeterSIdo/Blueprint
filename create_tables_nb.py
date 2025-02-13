@@ -74,14 +74,13 @@ def create_tables():
             );
             """,
             """
-            CREATE TABLE IF NOT EXISTS staff_list(
-                id SERIAL PRIMARY KEY,
+            CREATE TABLE IF NOT EXISTS staff_list (
+                staff_id SERIAL PRIMARY KEY,
                 staff_firstname VARCHAR(50) NOT NULL,
                 staff_surname VARCHAR(50) NOT NULL,
                 staff_initials VARCHAR(10) NOT NULL,
-                staff_unique_id VARCHAR(10) NOT NULL,
                 staff_access VARCHAR(20) NOT NULL,
-                staff_notes TEXT,
+                staff_email VARCHAR(50) NOT NULL,
                 password_hash VARCHAR(255) NOT NULL
             );
             """,
