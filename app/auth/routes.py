@@ -38,7 +38,7 @@ def auth():
         # Check if user exists and the password matches the generated hash
         if user and check_password_hash(user[7], password):
             session['user_id'] = user[0]
-            session['username'] = user[5]  # Using staff_username for the session
+            session['staff_firstname'] = user[1]  # Using staff_username for the session
             
             # Redirect based on user's access level (staff_access is index 4)
             if user[4] == 'carer':
