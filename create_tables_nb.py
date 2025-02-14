@@ -79,9 +79,9 @@ def create_tables():
                 staff_firstname VARCHAR(50) NOT NULL,
                 staff_surname VARCHAR(50) NOT NULL,
                 staff_initials VARCHAR(10) NOT NULL,
-                staff_unique_id VARCHAR(10) NOT NULL,
                 staff_access VARCHAR(20) NOT NULL,
-                staff_notes TEXT,
+                staff_username VARCHAR(20) NOT NULL,
+                staff_email VARCHAR(20) NOT NULL,
                 password_hash VARCHAR(255) NOT NULL
             );
             """,

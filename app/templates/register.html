@@ -1,47 +1,43 @@
 {% extends 'base.html' %}
-
 {% block content %}
-<h2> Register </h2>
+<h2>Register</h2>
 <form method="POST">
     {{ form.hidden_tag() }}
-    
     <div>
         {{ form.staff_firstname.label }}<br>
         {{ form.staff_firstname(size=32) }}
     </div>
-    
     <div>
         {{ form.staff_surname.label }}<br>
         {{ form.staff_surname(size=32) }}
     </div>
-    
+    <div>
+        {{ form.staff_username.label }}<br>
+        {{ form.staff_username(size=20) }}
+    </div>
     <div>
         {{ form.staff_initials.label }}<br>
         {{ form.staff_initials(size=10) }}
     </div>
-    
     <div>
-        {{ form.staff_unique_id.label }}<br>
-        {{ form.staff_unique_id(size=20) }}
+        {{ form.staff_email.label }}<br>
+        {{ form.staff_email(size=20) }}
     </div>
-    
     <div>
         {{ form.staff_access.label }}<br>
         {{ form.staff_access(size=15) }}
     </div>
-    
     <div>
         {{ form.password.label }}<br>
         {{ form.password(size=32) }}
     </div>
-    
     <div>
         {{ form.confirm_password.label }}<br>
         {{ form.confirm_password(size=32) }}
     </div>
-    
     <div>
         {{ form.submit() }}
     </div>
 </form>
 {% endblock %}
+  

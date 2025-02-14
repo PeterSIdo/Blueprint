@@ -19,47 +19,45 @@ timeout = 10
 @auth_bp.route('/auth', methods=['GET', 'POST'])
 def auth():
     if request.method == 'POST':
-        staff_unique_id = request.form.get('staff_unique_id')
+        # Get the staff_username and password from the form
+        staff_username = request.form.get('staff_username')
         password = request.form.get('password')
-
+        
         conn = get_connection()
         if conn is None:
             flash('Database connection error', 'error')
             return render_template('auth.html')
-
+        
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM staff_list WHERE staff_unique_id = %s", (staff_unique_id,))
+        # Look up the user by staff_username
+        cursor.execute("SELECT * FROM staff_list WHERE staff_username = %s", (staff_username,))
         user = cursor.fetchone()
         cursor.close()
         conn.close()
-
+        
+        # Check if user exists and the password matches the generated hash
         if user and check_password_hash(user[7], password):
             session['user_id'] = user[0]
-            session['username'] = user[1]
+            session['username'] = user[5]  # Using staff_username for the session
             
-            # Staff access logic
-            if user[5] == 'carer':  # Index 5 contains staff_access based on staff_list.txt
+            # Redirect based on user's access level (staff_access is index 4)
+            if user[4] == 'carer':
                 flash('Logged in successfully', 'success')
                 return redirect(url_for('carer.carer_menu'))
-            
-            elif user[5] == 'admin':
-                    flash('Logged in successfully', 'success')
-                    return redirect(url_for('admin.admin_menu'))
-                
-            elif user[5] == 'manager':
-                    flash('Logged in successfully', 'success')
-                    return redirect(url_for('data_input.family_menu'))
-                
-            elif user[5] == 'family':
+            elif user[4] == 'admin':
                 flash('Logged in successfully', 'success')
-                return redirect(url_for('family.family_menu'))            
-            
+                return redirect(url_for('admin.admin_menu'))
+            elif user[4] == 'manager':
+                flash('Logged in successfully', 'success')
+                return redirect(url_for('data_input.family_menu'))
+            elif user[4] == 'family':
+                flash('Logged in successfully', 'success')
+                return redirect(url_for('family.family_menu'))
             else:
-                flash('Logged in successfully', 'success') 
+                flash('Logged in successfully', 'success')
                 return redirect(url_for('main.index'))
         else:
             flash('Invalid credentials. Please try again.', 'amber')
-
     return render_template('auth.html')
 
 
@@ -139,37 +137,38 @@ def register():
         staff_firstname = form.staff_firstname.data
         staff_surname = form.staff_surname.data
         staff_initials = form.staff_initials.data
-        staff_unique_id = form.staff_unique_id.data
+        staff_username = form.staff_username.data  # New field
+        staff_email = form.staff_email.data
         staff_access = form.staff_access.data
         password = form.password.data
 
         conn = get_connection()
         cursor = conn.cursor()
-
-        # Check if user already exists
+        
+        # Check if user already exists based on email, initials or username
         cursor.execute(
-            "SELECT * FROM staff_list WHERE staff_unique_id = %s OR staff_initials = %s", 
-            (staff_unique_id, staff_initials)
+            "SELECT * FROM staff_list WHERE staff_email = %s OR staff_initials = %s OR staff_username = %s", 
+            (staff_email, staff_initials, staff_username)
         )
         existing_user = cursor.fetchone()
         if existing_user:
-            flash('Staff unique ID or initials already taken', 'error')
+            flash('Staff email, initials, or username already taken', 'error')
             return redirect(url_for('auth.register'))
-
+        
         # Hash the password
         password_hash = generate_password_hash(password)
-
-        # Insert new staff into the database
+        
+        # Insert new staff into the database including staff_username field
         cursor.execute("""
             INSERT INTO staff_list 
-            (staff_firstname, staff_surname, staff_initials, staff_unique_id, staff_access, password_hash)
-            VALUES (%s, %s, %s, %s, %s, %s)
-            """, (staff_firstname, staff_surname, staff_initials, staff_unique_id, staff_access, password_hash)
+            (staff_firstname, staff_surname, staff_initials, staff_username, staff_access, staff_email, password_hash)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """, (staff_firstname, staff_surname, staff_initials, staff_username, staff_access, staff_email, password_hash)
         )
         conn.commit()
         cursor.close()
         conn.close()
-
+        
         flash('Registration successful! Please log in.', 'success')
         return redirect(url_for('auth.auth'))
     return render_template('register.html', form=form)
