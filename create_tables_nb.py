@@ -81,6 +81,7 @@ def create_tables():
                 staff_initials VARCHAR(10) NOT NULL,
                 staff_access VARCHAR(20) NOT NULL,
                 staff_email VARCHAR(50) NOT NULL,
+                staff_username VARCHAR(20) NOT NULL,
                 password_hash VARCHAR(255) NOT NULL
             );
             """,

@@ -12,6 +12,8 @@ from datetime import datetime, timedelta
 import time
 from adminpanel.forms import RegistrationForm
 from app.db_connection.conn import get_connection  # Make sure you import your database connection helper
+from adminpanel.models import StaffList
+from adminpanel.forms import RegistrationForm
 
 
 # Timeout variable for a session 
@@ -20,67 +22,61 @@ timeout = 10
 @auth_bp.route('/auth', methods=['GET', 'POST'])
 def auth():
     if request.method == 'POST':
-        staff_unique_id = request.form.get('staff_unique_id')
+        staff_username = request.form.get('staff_username')
         password = request.form.get('password')
 
-        conn = get_connection()
-        if conn is None:
-            flash('Database connection error', 'error')
+        # Verify that staff_username and password were provided
+        if not staff_username or not password:
+            flash("Please provide both staff username and password.", 'error')
             return render_template('auth.html')
 
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM staff_list WHERE staff_unique_id = %s", (staff_unique_id,))
-        user = cursor.fetchone()
-        cursor.close()
-        conn.close()
+        # Use the SQLAlchemy ORM to query the user by staff_username
+        user = StaffList.query.filter_by(staff_username=staff_username).first()
 
-        if user and check_password_hash(user[7], password):
-            session['user_id'] = user[0]
-            session['username'] = user[1]
-            
-            # Staff access logic
-            if user[5] == 'carer':  # Index 5 contains staff_access based on staff_list.txt
-                flash('Logged in successfully', 'success')
+        # Check if a user exists and the provided password is correct
+        if user and check_password_hash(user.password_hash, password):
+            session['staff_id'] = user.staff_id
+            session['staff_firstname'] = user.staff_firstname
+            session['staff_surname'] = user.staff_surname
+            session['staff_initials'] = user.staff_initials
+            session['staff_email'] = user.staff_email
+            session['staff_username'] = user.staff_username
+            # Set last activity time so session timeout can be managed.
+            session['last_activity'] = time.time()
+            flash('Logged in successfully', 'success')
+
+
+            # Redirect users based on their access level
+            if user.staff_access == 'carer':
                 return redirect(url_for('carer.carer_menu'))
-            
-            elif user[5] == 'admin':
-                    flash('Logged in successfully', 'success')
-                    return redirect(url_for('admin.admin_menu'))
-                
-            elif user[5] == 'manager':
-                    flash('Logged in successfully', 'success')
-                    return redirect(url_for('data_input.family_menu'))
-                
-            elif user[5] == 'family':
-                flash('Logged in successfully', 'success')
-                return redirect(url_for('family.family_menu'))            
-            
+            elif user.staff_access == 'admin':
+                return redirect(url_for('admin.admin_menu'))
+            elif user.staff_access == 'manager':
+                return redirect(url_for('data_input.family_menu'))
+            elif user.staff_access == 'family':
+                return redirect(url_for('family.family_menu'))
             else:
-                flash('Logged in successfully', 'success') 
                 return redirect(url_for('main.index'))
         else:
-            flash('Invalid credentials. Please try again.', 'amber')
-
+            flash('Invalid credentials. Please try again.', 'error')
+    
     return render_template('auth.html')
 
 
 def logged_in(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        # Check if user is logged in
-        if 'user_id' not in session:
+        # Change 'user_id' to 'staff_id' as stored during login.
+        if 'staff_id' not in session:
             flash('Please log in first', 'error')
             return redirect(url_for('auth.auth'))
-        
         # Check for session timeout
         if 'last_activity' in session:
             last_activity = datetime.fromtimestamp(session['last_activity'])
             if datetime.now() - last_activity > timedelta(minutes=timeout):
-                # Session expired
                 session.clear()
                 flash('Your session has expired. Please log in again.', 'error')
                 return redirect(url_for('auth.auth'))
-        
         # Update last activity timestamp
         session['last_activity'] = time.time()
         return f(*args, **kwargs)
@@ -141,6 +137,7 @@ def register():
         staff_surname = form.staff_surname.data
         staff_initials = form.staff_initials.data
         staff_access = form.staff_access.data
+        staff_username = form.staff_username.data
         staff_email = form.staff_email.data
         password = form.password.data
         
@@ -149,12 +146,12 @@ def register():
         
         # Check if user already exists using staff_email and/or initials
         cursor.execute(
-            "SELECT * FROM staff_list WHERE staff_email = %s OR staff_initials = %s", 
-            (staff_email, staff_initials)
+            "SELECT * FROM staff_list WHERE staff_email = %s OR staff_username = %s OR staff_initials =%s", 
+            (staff_email, staff_username, staff_initials)
         )
         existing_user = cursor.fetchone()
         if existing_user:
-            flash('Staff email or initials already taken', 'error')
+            flash('Staff email, username or initials already taken', 'error')
             cursor.close()
             conn.close()
             return redirect(url_for('auth.register'))
@@ -165,9 +162,11 @@ def register():
         # Insert new staff into the database
         cursor.execute("""
             INSERT INTO staff_list 
-            (staff_firstname, staff_surname, staff_initials, staff_access, staff_email, password_hash)
-            VALUES (%s, %s, %s, %s, %s, %s)
-            """, (staff_firstname, staff_surname, staff_initials, staff_access, staff_email, password_hash)
+            (staff_firstname, staff_surname, staff_initials, staff_access, staff_email,
+            staff_username, password_hash)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """, (staff_firstname, staff_surname, staff_initials, staff_access, staff_email, 
+                staff_username, password_hash)
         )
         conn.commit()
         cursor.close()

@@ -16,12 +16,16 @@
         {{ form.staff_initials(size=10) }}
     </div>
     <div>
+        {{ form.staff_access.label }}<br>
+        {{ form.staff_access(size=15) }}
+    </div>
+    <div>
         {{ form.staff_email.label }}<br>
         {{ form.staff_email(size=32) }}
     </div>
     <div>
-        {{ form.staff_access.label }}<br>
-        {{ form.staff_access(size=15) }}
+        {{ form.staff_username.label }}<br>
+        {{ form.staff_username(size=20) }}
     </div>
     <div>
         {{ form.password.label }}<br>

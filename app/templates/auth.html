@@ -1,18 +1,29 @@
 {% extends "base.html" %}
-
 {% block content %}
-<div class="form-container">
-    <h2>Login</h2>
-    <form method="POST">
-        <div class="form-group">
-            <label for="staff_unique_id">User ID:</label>
-            <input type="text" id="staff_unique_id" name="staff_unique_id" required>
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card mt-4">
+        <div class="card-header text-center">
+          <h2>Login</h2>
         </div>
-        <div class="form-group">
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
+        <div class="card-body">
+          <form method="POST">
+            <!-- Include CSRF token if you are using Flask-WTF -->
+            {{ form.csrf_token() if form is defined }}
+            <div class="form-group">
+              <label for="staff_username">Username:</label>
+              <input type="text" class="form-control" id="staff_username" name="staff_username" placeholder="Enter your username" required>
+            </div>
+            <div class="form-group">
+              <label for="password">Password:</label>
+              <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+            <button type="submit" class="btn btn-dark-green btn-block">Login</button>
+          </form>
         </div>
-        <button type="submit" class="btn-dark-green">Login</button>
-    </form>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}
