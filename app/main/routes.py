@@ -1,11 +1,12 @@
-from flask import render_template, session
+from flask import render_template, session, redirect, url_for
 from app.main import main_bp
 from app.db_connection.conn import get_connection
 
 
 @main_bp.route('/')
 def index():
-    return render_template('index.html')
+    return redirect(url_for('auth.auth'))
+#    return render_template('index.html')
 
 @main_bp.route('/logout')
 def logout():
